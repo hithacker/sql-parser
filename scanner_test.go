@@ -24,6 +24,7 @@ func TestScanner_Scan(t *testing.T) {
 
 		// Identifiers
 		{s: `foo`, tok: IDENT, lit: `foo`},
+		//TODO: See why this test exepcts us to remove the ending dash
 		{s: `Zx12_3U_-`, tok: IDENT, lit: `Zx12_3U_`},
 
 		// Keywords

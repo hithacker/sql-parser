@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -18,14 +20,43 @@ func NewScanner(reader *strings.Reader) Scanner {
 
 //Scan is a cool func
 func (s Scanner) Scan() (Token, string) {
-	ch, size, err := s.r.ReadRune()
-	fmt.Println("Ch", ch, "Size", size, "Error", err)
-	fmt.Printf("%q\n", ch)
-	if size == 0 {
+	var buffer bytes.Buffer
+	ch, _, err := s.r.ReadRune()
+	buffer.WriteRune(ch)
+	fmt.Println(buffer.String())
+	if err == io.EOF {
 		return EOF, ""
 	}
 
+	for {
+		ch, _, err := s.r.ReadRune()
+		if err != io.EOF {
+			fmt.Println("Writing")
+			buffer.WriteRune(ch)
+		} else {
+			fmt.Println("Breaking")
+			break
+		}
+	}
+
+	switch bufferValue := buffer.String(); {
+	case bufferValue == "SELECT":
+		return SELECT, "SELECT"
+	case bufferValue == "FROM":
+		return FROM, "FROM"
+	case bufferValue == "*":
+		return ASTERISK, "*"
+	case isWhitespace(rune(bufferValue[0])):
+		return WS, bufferValue
+	default:
+		return IDENT, buffer.String()
+	}
+
 	return ASTERISK, "*"
+}
+
+func isWhitespace(ch rune) bool {
+	return ch == '\t' || ch == '\n' || ch == '\r' || ch == ' '
 }
 
 func (t Token) ToS() string {
