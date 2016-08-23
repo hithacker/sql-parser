@@ -5,10 +5,6 @@ import (
 	"testing"
 )
 
-func TestMeta(t *testing.T) {
-	t.Error("Yo error")
-}
-
 // Ensure the scanner can scan tokens correctly.
 func TestScanner_Scan(t *testing.T) {
 	var tests = []struct {
@@ -39,7 +35,7 @@ func TestScanner_Scan(t *testing.T) {
 		s := NewScanner(strings.NewReader(tt.s))
 		tok, lit := s.Scan()
 		if tt.tok != tok {
-			t.Errorf("%d. %q token mismatch: exp=%q got=%q <%q>", i, tt.s, tt.tok, tok, lit)
+			t.Errorf("%d. %q token mismatch: exp=%q got=%q <%q>", i, tt.s, tt.tok.ToS(), tok.ToS(), lit)
 		} else if tt.lit != lit {
 			t.Errorf("%d. %q literal mismatch: exp=%q got=%q", i, tt.s, tt.lit, lit)
 		}
